@@ -1,16 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { addSong } from '../services/favoriteSongsAPI';
 
 function MusicCard({
   musicName,
+  favorite,
 }) {
   const [isLoading, setIsLoading] = useState(false);
-  const addFavorite = async () => {
+  const [isFavorite, setIsFavorite] = useState(favorite);
+
+  useEffect(() => {
+    setIsFavorite(favorite);
+  }, [favorite]);
+
+  const addFavorite = async (param) => {
     setIsLoading(true);
     await addSong(musicName);
+    setIsFavorite(param);
     setIsLoading(false);
   };
+
+  const handleFavorite = () => (!isFavorite ? addFavorite(true) : addFavorite(false));
+
   return (
     <div>
       <p>{musicName.trackName}</p>
@@ -28,7 +39,8 @@ function MusicCard({
           type="checkbox"
           data-testid={ `checkbox-music-${musicName.trackId}` }
           id="favMusic"
-          onClick={ addFavorite }
+          onChange={ handleFavorite }
+          checked={ isFavorite }
         />
       </label>
       {isLoading && <p>Carregando...</p>}
@@ -42,6 +54,7 @@ MusicCard.propTypes = {
     previewUrl: PropTypes.string.isRequired,
     trackId: PropTypes.number.isRequired,
   }).isRequired,
+  favorite: PropTypes.bool.isRequired,
 };
 
 export default MusicCard;

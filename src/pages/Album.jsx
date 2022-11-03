@@ -4,10 +4,12 @@ import MusicCard from '../components/MusicCard';
 import Header from '../components/Header';
 import getMusics from '../services/musicsAPI';
 import Loading from '../components/Loading';
+import { getFavoriteSongs } from '../services/favoriteSongsAPI';
 
 function Album() {
   const { id } = useParams();
   const [album, setAlbum] = useState([]);
+  const [favSongs, setFavSongs] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -16,6 +18,17 @@ function Album() {
     };
     fetchData();
   }, [id]);
+
+  useEffect(() => {
+    const fetchFavoriteSongs = async () => {
+      const data = await getFavoriteSongs();
+      setFavSongs(data);
+    };
+    fetchFavoriteSongs();
+  }, []);
+
+  const getFavorite = (trackIds) => favSongs.some(({ trackId }) => trackId === trackIds);
+
   return (
     <div data-testid="page-album">
       <Header />
@@ -32,7 +45,10 @@ function Album() {
           <ul>
             {album.slice(1).map((music) => (
               <li key={ Math.random() }>
-                <MusicCard musicName={ music } />
+                <MusicCard
+                  musicName={ music }
+                  favorite={ getFavorite(music.trackId) }
+                />
               </li>
             ))}
           </ul>
