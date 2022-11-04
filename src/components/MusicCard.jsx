@@ -5,6 +5,7 @@ import { addSong, removeSong } from '../services/favoriteSongsAPI';
 function MusicCard({
   musicName,
   favorite,
+  removeSound = () => {},
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isFavorite, setIsFavorite] = useState(favorite);
@@ -14,10 +15,12 @@ function MusicCard({
   }, [favorite]);
 
   const addFavorite = async (param, func) => {
+    removeSound(true);
     setIsLoading(true);
     await func(musicName);
     setIsFavorite(param);
     setIsLoading(false);
+    removeSound(false);
   };
 
   const handleFavorite = () => (
@@ -57,6 +60,7 @@ MusicCard.propTypes = {
     trackId: PropTypes.number.isRequired,
   }).isRequired,
   favorite: PropTypes.bool.isRequired,
+  removeSound: PropTypes.func.isRequired,
 };
 
 export default MusicCard;
